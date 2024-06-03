@@ -45,11 +45,13 @@ Eigen::Vector<PassiveT, d> line_search(
 
     Eigen::Vector<PassiveT, d> x_new = _x0;
     PassiveT s = _s_max;
+    PassiveT f_best = INFINITY;
     for (int i = 0; i < _max_iters; ++i)
     {
         x_new = _x0 + s * _d;
         const PassiveT f_new = _eval(x_new);
         TINYAD_ASSERT_EQ(f_new, f_new);
+        f_best = std::min(f_best, f_new);
         if (armijo_condition(_f, f_new, s, _d, _g, _armijo_const))
             return x_new;
 
@@ -59,7 +61,7 @@ Eigen::Vector<PassiveT, d> line_search(
             s *= _shrink;
     }
 
-    TINYAD_WARNING("Line search couldn't find improvement. Gradient max norm is " << _g.cwiseAbs().maxCoeff());
+    TINYAD_WARNING("Line search couldn't find improvement. Best is " << f_best << ", Gradient max norm is " << _g.cwiseAbs().maxCoeff());
 
     return _x0;
 }

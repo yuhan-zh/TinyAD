@@ -100,8 +100,9 @@ struct ScalarFunction
     /**
      * Evaluate function without computing derivatives.
      */
-    PassiveT eval(
-            const Eigen::VectorX<PassiveT>& _x) const;
+PassiveT eval(
+            const Eigen::VectorX<PassiveT>& _x,
+            const std::vector<std::string>& = std::vector<std::string>()) const;
 
     /**
      * Evaluate function without computing derivatives.

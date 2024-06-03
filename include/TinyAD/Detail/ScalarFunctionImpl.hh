@@ -140,17 +140,23 @@ template <int variable_dimension, typename PassiveT, typename VariableHandleT>
 PassiveT
 ScalarFunction<variable_dimension, PassiveT, VariableHandleT>::
 eval(
-        const Eigen::VectorX<PassiveT>& _x) const
+        const Eigen::VectorX<PassiveT>& _x,
+        const std::vector<std::string>& names) const
 {
     TINYAD_ASSERT_EQ(_x.size(), n_vars);
+    TINYAD_ASSERT(names.empty() || (names.size() == objective_terms.size()));
 
     PassiveT f = 0.0;
+    int i = 0;
     for (auto& objective : objective_terms)
     {
-        if (f == INFINITY)
+        if (f == INFINITY && names.empty())
             return INFINITY;
-        f += objective->eval(_x);
+        PassiveT f_i = objective->eval(_x);
+        f += f_i;
+        if (!names.empty()) std::cout << "\n" << names[i++] << " = " << f_i;
     }
+    if (!names.empty()) std::cout << "\nTotal objective = " << f << std::endl;
 
     return f;
 }
